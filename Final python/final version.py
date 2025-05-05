@@ -10,8 +10,7 @@ import matplotlib.dates as mdates  # for time
 PORT = 'COM3'
 BAUD_RATE = 115200
 ser = serial.Serial(PORT, BAUD_RATE, timeout=1)
-excel_file = r'C:\Users\opeg\OneDrive - University of Dundee\year 4\sem 1\Project\code\Python test VS code\Final python\datalog.xlsx'
-
+excel_file = 'datalogged_data.xls'
 data_log = []
 log_time = time.time() #log 1 data per second 
 
