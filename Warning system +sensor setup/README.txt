@@ -15,33 +15,33 @@ Links for Library:
 
 The logic of the code follows:
 
-Read all sensors (ozone, NO₂, PM₂.₅, PM₁₀).
+1.) Read all sensors (ozone, NO₂, PM₂.₅, PM₁₀).
 
 Compute elapsed time since last loop (using millis()).
 
-Update timer:
+2.) Update timer:
 
 If value ≥ threshold → add to total_time_above_X, reset total_time_below_X.
 
 Else → add to total_time_below_X.
 
-Green Warning:
+3.) Green Warning:
 
 If total_time_above_X ≥ threshold_X_timer and no prior danger and not in “safe” → turn green LED on.
 
-Red Warning:
+4.) Red Warning:
 
 If total_time_above_X ≥ (threshold_X_timer + extra_overtime) and no prior danger and not in “safe”:
 
 turn red LED & buzzer on, set mark_X = true.
 
-Safety Check:
+5.) Safety Check:
 
 If any LED is on and all total_time_below_X ≥ time_in_safety:
 
 reset all warning timers, set safe = true, turn LEDs & buzzer off.
 
-Re‐exposure (after being “safe” and having triggered danger once):
+6.) Re‐exposure (after being “safe” and having triggered danger once):
 
 If value ≥ threshold → accumulate time_reexpose_X.
 
