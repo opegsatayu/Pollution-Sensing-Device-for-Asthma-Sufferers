@@ -14,7 +14,7 @@ DFRobot_OzoneSensor Ozone(&Wire);
 #define Mics_I2C_ADDRESS   0x75
 DFRobot_MICS_I2C mics(&Wire, Mics_I2C_ADDRESS);
 
-// #define potPin A5
+#define potPin A5
 
 //  PM Sensor Setup 
 SensirionI2CSen5x sen5x;
@@ -27,14 +27,14 @@ const int buzzer   = 9;
 
 // pot
 
- //const int threshold_pot = 500;
- //const unsigned long threshold_pot_timer = 4000; 
+ const int threshold_pot = 500;
+ const unsigned long threshold_pot_timer = 4000; 
 
 
 
 ////// Thresholds for each sensor //////
 // Ozone (in ppb)
-const int threshold_Ozone               =   400;           //200;     // 200 ppb = 0.2 ppm 
+const int threshold_Ozone               =    200;     // 200 ppb = 0.2 ppm 
 const unsigned long threshold_ozone_timer =  3000;              //7200000;  // 2 hours
 
 // NO₂ (in ppm) – using a 1-hour exposure for green warning
@@ -51,9 +51,9 @@ const unsigned long threshold_pm10_timer = 86400000;  // 24 hours in ms
 ////////////////////////////////////////////////////////////////////////////
 
 // ***** Universal Timing for Warning Logic *****
-const unsigned long extra_overtime   = 6000; //3600000 ;   // extra time 60 min after green to trigger red warning
-const unsigned long time_in_safety   = 2000; //1800000;  // 30 min in safety required to deem safe and clear the warning
-const unsigned long danger_again     = 3000; //900000;   // 15 min of re-exposure to re-trigger warning
+const unsigned long extra_overtime   = 3600000;   // extra time 60 min after green to trigger red warning
+const unsigned long time_in_safety   = 1800000;  // 30 min in safety required to deem safe and clear the warning
+const unsigned long danger_again     = 900000;   // 15 min of re-exposure to re-trigger warning
 
 ///////////////////////////////////////////////////////////////////////
 //  Ozone warning state variables 
@@ -85,10 +85,10 @@ bool mark_pm10 = false;
 
 //////////////////////////////////// POT test//////////////
 //pot warning state variables 
-//  unsigned long total_time_above_pot  = 0;
- // unsigned long total_time_below_pot  = 0;
- // unsigned long time_reexpose_pot     = 0;
- // bool mark_pot = false;
+  unsigned long total_time_above_pot  = 0;
+  unsigned long total_time_below_pot  = 0;
+  unsigned long time_reexpose_pot     = 0;
+  bool mark_pot = false;
 
 unsigned long previous_time = 0;
 
@@ -184,7 +184,7 @@ Serial.println("Ozone connected");
 void loop() { 
 /////////////////// read sensor values  ////////////////////////////////////////////////////
 //read pot 
-// int potValue = analogRead(potPin);
+ int potValue = analogRead(potPin);
 
 // read ozone
 int16_t ozoneValue = Ozone.readOzoneData(COLLECT_NUMBER);
@@ -231,8 +231,8 @@ float no2Value = mics.getGasData(NO2); // in PPM
    // Serial.print(",");
     
   } 
-  //print pot 
-  //Serial.print(potValue);
+  print pot 
+  Serial.print(potValue);
   Serial.println();  
 
 // make time (universal)
@@ -343,27 +343,27 @@ if (pm10Value >= threshold_pm10) {
 
 
 /////////////////// pot warning logic //////////////
- //if (potValue >= threshold_pot) {
-  //  total_time_above_pot = total_time_above_pot + time_passed;
-  //  total_time_below_pot = 0;
- // } else{
-  //  total_time_below_pot = total_time_below_pot + time_passed;  
- // }
+ if (potValue >= threshold_pot) {
+    total_time_above_pot = total_time_above_pot + time_passed;
+    total_time_below_pot = 0;
+  } else{
+    total_time_below_pot = total_time_below_pot + time_passed;  
+ }
 
 // green LED 
- // if ((total_time_above_pot >= threshold_pot_timer) && mark_pot == false && safe == false) {
- //   digitalWrite(greenLed, HIGH);
- //   green_led_on = true; 
+  if ((total_time_above_pot >= threshold_pot_timer) && mark_pot == false && safe == false) {
+    digitalWrite(greenLed, HIGH);
+    green_led_on = true; 
      
- // } 
+  } 
 
 // red LED 
- //  if ((total_time_above_pot >= extra_overtime + threshold_pot_timer) && mark_pot == false && safe == false) { 
-  //   digitalWrite(redLed, HIGH);
-  //   digitalWrite(buzzer, HIGH);
-   //  red_led_on = true;
-  //   mark_pot = true; 
-  //}
+   if ((total_time_above_pot >= extra_overtime + threshold_pot_timer) && mark_pot == false && safe == false) { 
+     digitalWrite(redLed, HIGH);
+     digitalWrite(buzzer, HIGH);
+     red_led_on = true;
+     mark_pot = true; 
+  }
 
 
 
@@ -380,13 +380,13 @@ if (pm10Value >= threshold_pm10) {
     total_time_below_no2 = 0;
     total_time_below_pm25 = 0;
     total_time_below_pm10 = 0;
-   // total_time_below_pot = 0;
+    total_time_below_pot = 0;
     safe = true ;  // mark user in safe
     time_reexpose_ozone = 0; // user did not re-expose 
     time_reexpose_no2 = 0;
     time_reexpose_pm25 = 0;
     time_reexpose_pm10 = 0;
-   // time_reexpose_pot = 0;
+    time_reexpose_pot = 0;
 
      digitalWrite(greenLed, LOW);
     digitalWrite(redLed, LOW);
@@ -441,13 +441,13 @@ if (pm10Value >= threshold_pm10) {
 //----------------------------------------------------------------------------
 
 ///////////// pot re-expose logic//////////////
- // if (potValue >= threshold_pot && safe == true && mark_pot == true){  // re-expose 
-   //time_reexpose_pot = time_reexpose_pot + time_passed; //start a timer for no2 re-expose 
-  // } 
+ if (potValue >= threshold_pot && safe == true && mark_pot == true){  // re-expose 
+   time_reexpose_pot = time_reexpose_pot + time_passed; //start a timer for no2 re-expose 
+   } 
 
- //  if (mark_pm10 == true && safe == true && time_reexpose_pot >= danger_again) {
- //  digitalWrite(redLed, HIGH);
- //   digitalWrite(buzzer, HIGH);
- // }
+   if (mark_pm10 == true && safe == true && time_reexpose_pot >= danger_again) {
+   digitalWrite(redLed, HIGH);
+    digitalWrite(buzzer, HIGH);
+  }
 
   }  //close loop bracket
