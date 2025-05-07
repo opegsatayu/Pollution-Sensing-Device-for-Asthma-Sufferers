@@ -1,7 +1,7 @@
 Sensor used include: 
-1.) Sensirion SEN55-SDN-T
-2.) Gravity IIC Ozone Sensor (SEN0321)
-3.) Gravity: MEMS Gas Sensor (SEN0377)
+1.) Sensirion SEN55-SDN-T, I²C (addr 0x69)
+2.) Gravity IIC Ozone Sensor (SEN0321), I²C (addr 0x73)
+3.) Gravity: MEMS Gas Sensor (SEN0377), I²C (addr 0x75)
 
 Microcontroller used: 
 1.) Arduino MEGA 2560 
@@ -11,3 +11,5 @@ Links for Library:
 2.) https://wiki.dfrobot.com/Gravity_IIC_Ozone_Sensor_(0-10ppm)%20SKU_SEN0321
 3.) https://wiki.dfrobot.com/_SKU_SEN0377_Gravity__MEMS_Gas_Sensor_CO__Alcohol__NO2___NH3___I2C___MiCS_4514
 
+The logic of the code follows:
+The system will start a timer once the pollutant level passes above the 
